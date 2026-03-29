@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    @apply bg-obsidian text-text-base overflow-hidden;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    height: 100vh;
+    width: 100vw;
+  }
+  h1,h2,h3,h4,h5,h6 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; }
+}
+
+@layer components {
+  .shell { @apply flex w-screen h-screen overflow-hidden bg-obsidian; }
+  .main-area { @apply flex flex-col flex-1 min-w-0 h-screen overflow-hidden; }
+  .body-viewport { @apply flex flex-1 min-h-0 overflow-hidden; }
+
+  .sidebar {
+    @apply flex flex-col items-center py-5 bg-surface-low z-50 flex-shrink-0;
+    width: 68px;
+  }
+  .nav-icon {
+    @apply w-10 h-10 flex items-center justify-center rounded cursor-pointer
+           text-text-muted transition-all duration-300 hover:text-cyan hover:bg-cyan-dim;
+  }
+  .nav-icon.active { @apply text-cyan bg-cyan-dim; }
+
+  .dash-header {
+    @apply flex items-center justify-between px-8 bg-surface-low flex-shrink-0;
+    height: 56px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  .badge-red    { @apply text-[9px] font-mono uppercase tracking-wide text-tactical bg-tactical/10 px-2 py-0.5 rounded-sm; }
+  .badge-green  { @apply text-[9px] font-mono uppercase tracking-wide text-neon bg-neon/10 px-2 py-0.5 rounded-sm; }
+  .badge-cyber  { @apply text-[9px] font-mono uppercase tracking-wide text-cyan bg-cyan-dim px-2 py-0.5 rounded-sm; }
+  .badge-orange { @apply text-[9px] font-mono uppercase tracking-wide text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-sm; }
+
+  .btn-cyan {
+    @apply w-full py-3.5 font-space font-bold text-[11px] tracking-widest uppercase rounded-sm
+           transition-all duration-300 cursor-pointer border-0;
+    background: linear-gradient(135deg, #8ff5ff 0%, #00deec 100%);
+    color: #001a1c;
+  }
+  .btn-cyan:hover { box-shadow: 0 0 30px rgba(143,245,255,0.25); filter: brightness(1.08); }
+
+  .btn-outline {
+    @apply px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-text-sub
+           border border-text-muted/20 rounded-sm transition-all duration-300 cursor-pointer bg-transparent;
+  }
+  .btn-outline:hover { @apply text-cyan border-cyan/40; }
+
+  .card     { @apply bg-surface-high rounded-sm p-5; }
+  .card-low { @apply bg-surface-low rounded-sm p-5; }
+
+  .progress-track       { @apply w-full h-1 bg-surface-highest rounded-full overflow-hidden; }
+  .progress-fill-red    { @apply h-full bg-tactical rounded-full; }
+  .progress-fill-green  { @apply h-full bg-neon rounded-full; }
+  .progress-fill-cyan   { @apply h-full rounded-full; background: linear-gradient(90deg,#8ff5ff,#00deec); }
+
+  .risk-critical { @apply bg-tactical/20 text-tactical border border-tactical/30; }
+  .risk-elevated { @apply bg-amber-500/20 text-amber-400 border border-amber-500/30; }
+  .risk-guarded  { @apply bg-surface-bright text-text-sub border border-text-muted/20; }
+  .risk-low      { @apply bg-neon/10 text-neon border border-neon/20; }
+
+  .signal-card { @apply bg-surface-low p-4 relative transition-all duration-300 cursor-pointer; }
+  .signal-card:hover { @apply bg-surface-high; }
+
+  .section-label { @apply text-[9px] font-mono uppercase tracking-[0.2em] text-text-muted mb-1; }
+  .section-title { @apply font-space font-bold text-text-base uppercase tracking-tight; }
+}
+
+@layer utilities {
+  .font-space { font-family: 'Space Grotesk', sans-serif; }
+  .text-glow-cyan { text-shadow: 0 0 20px rgba(143,245,255,0.5); }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-thin::-webkit-scrollbar { width: 3px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-surface-bright rounded-full; }
+}
+
+/* ── Custom Keyframes ── */
+@keyframes pulse-ring {
+  0%,100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.03); opacity: 0.8; }
+}
+.animate-pulse-ring { animation: pulse-ring 3s ease-in-out infinite; }
+
+@keyframes scan-v { 0% { top: 0; } 100% { top: 100%; } }
+.animate-scan { animation: scan-v 5s linear infinite; }
+
+@keyframes candle-grow {
+  from { transform: scaleY(0); transform-origin: bottom; }
+  to   { transform: scaleY(1); transform-origin: bottom; }
+}
+.animate-candle { animation: candle-grow 0.6s ease-out forwards; }
