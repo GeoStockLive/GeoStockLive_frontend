@@ -8,7 +8,14 @@ const SYMBOLS = [
   { id: 'NVDA', name: 'NVIDIA Corp.', type: 'Stock' },
   { id: 'MSFT', name: 'Microsoft', type: 'Stock' },
   { id: 'TSLA', name: 'Tesla, Inc.', type: 'Stock' },
+  { id: 'GOOGL', name: 'Alphabet Inc.', type: 'Stock' },
+  { id: 'AMZN', name: 'Amazon.com', type: 'Stock' },
+  { id: 'META', name: 'Meta Platforms', type: 'Stock' },
+  { id: 'NFLX', name: 'Netflix, Inc.', type: 'Stock' },
+  { id: 'BTC/USD', name: 'Bitcoin / USD', type: 'Crypto' },
+  { id: 'ETH/USD', name: 'Ethereum / USD', type: 'Crypto' },
   { id: 'XAU/USD', name: 'Gold / USD', type: 'Forex' },
+  { id: 'EUR/USD', name: 'Euro / USD', type: 'Forex' },
 ];
 
 const API_KEY = '7c48d5d9a40542aa853b812fba65dff7';

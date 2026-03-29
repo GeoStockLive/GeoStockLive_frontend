@@ -7,6 +7,7 @@ const nav = [
   { href: '/risk',       label: 'RISK',    icon: <GridIcon /> },
   { href: '/signals',    label: 'SIGNALS', icon: <SignalIcon /> },
   { href: '/order-book', label: 'TRADE',   icon: <ChartIcon /> },
+  { href: '/news',       label: 'NEWS',    icon: <NewsIcon /> },
   { href: '/history',    label: 'HISTORY', icon: <ClockIcon /> },
 ];
 
@@ -60,4 +61,7 @@ function CogIcon() {
 }
 function HelpIcon() {
   return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
+}
+function NewsIcon() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>;
 }

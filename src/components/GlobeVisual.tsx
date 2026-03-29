@@ -2,36 +2,23 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { RISK_COLORS } from '../utils/risk-logic';
 
 // Dynamic import for the Globe component as it uses browser-only APIs
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
-const RISK_COLORS = {
-  CRITICAL: '#ff716c', // Tactical Red
-  ELEVATED: '#fbbf24', // Amber
-  GAURDED: '#a8abb3',  // Text Muted
-  LOW: '#00fc40',      // Neon Green
+// Standardized colors move to utils, using them here
+const LOCAL_RISK_COLORS = {
+  CRITICAL: RISK_COLORS.HIGH,
+  ELEVATED: RISK_COLORS.MEDIUM,
+  LOW: RISK_COLORS.LOW,
+  UNKNOWN: '#1e293b', // Slate-800 for data gaps
 };
 
-// Mock risk data by country ISO code (A3)
-const COUNTRY_RISK: Record<string, string> = {
-  RUS: 'CRITICAL',
-  UKR: 'CRITICAL',
-  SAU: 'CRITICAL',
-  IRN: 'CRITICAL',
-  IRQ: 'ELEVATED',
-  CHN: 'ELEVATED',
-  USA: 'LOW',
-  CAN: 'LOW',
-  AUS: 'LOW',
-  GBR: 'LOW',
-  FRA: 'LOW',
-  DEU: 'LOW',
-  AFG: 'CRITICAL',
-  SYR: 'CRITICAL',
-  ISR: 'CRITICAL',
-  PSE: 'CRITICAL',
-};
+// Note: COUNTRY_RISK removed in favor of dynamic API fetch
+interface RiskData {
+  [countryName: string]: number; // score 0 to 1
+}
 
 interface GlobeVisualProps {
   onCountryClick?: (countryName: string) => void;
@@ -39,13 +26,24 @@ interface GlobeVisualProps {
 
 export default function GlobeVisual({ onCountryClick }: GlobeVisualProps) {
   const [countries, setCountries] = useState({ features: [] });
-  const globeEl = useRef<any>();
+  const [riskScores, setRiskScores] = useState<RiskData>({});
+  const globeEl = useRef<any>(null);
 
   useEffect(() => {
     // Load GeoJSON data for countries
     fetch('https://raw.githubusercontent.com/vasturiano/react-globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
       .then(res => res.json())
       .then(setCountries);
+
+    // Fetch real ML-predicted risk scores from backend
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    fetch(`${apiBase}/risk/`)
+      .then(res => res.json())
+      .then(data => {
+        console.log('[GLOBE] Received risk scores:', data);
+        setRiskScores(data);
+      })
+      .catch(err => console.error('[GLOBE] Failed to sync risk data:', err));
   }, []);
 
   useEffect(() => {
@@ -64,8 +62,15 @@ export default function GlobeVisual({ onCountryClick }: GlobeVisualProps) {
   }, [globeEl.current]);
 
   const getCountryColor = (d: any) => {
-    const risk = COUNTRY_RISK[d.properties.ISO_A3] || 'GAURDED';
-    return RISK_COLORS[risk as keyof typeof RISK_COLORS] || RISK_COLORS.GAURDED;
+    const name = d.properties.NAME || d.properties.ADMIN;
+    const score = riskScores[name]; // backend returns {"CountryName": score}
+    
+    if (score === undefined) return LOCAL_RISK_COLORS.UNKNOWN;
+    
+    // Internal color mapping
+    if (score >= 0.7) return RISK_COLORS.HIGH;
+    if (score >= 0.4) return RISK_COLORS.MEDIUM;
+    return RISK_COLORS.LOW;
   };
 
   return (
