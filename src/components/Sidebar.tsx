@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const nav = [
-  { href: '/',           label: 'PULSE',   icon: <ActivityIcon /> },
+  { href: '/pulse',      label: 'PULSE',   icon: <ActivityIcon /> },
   { href: '/risk',       label: 'RISK',    icon: <GridIcon /> },
   { href: '/signals',    label: 'SIGNALS', icon: <SignalIcon /> },
   { href: '/order-book', label: 'TRADE',   icon: <ChartIcon /> },
