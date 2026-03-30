@@ -100,3 +100,11 @@
   to   { transform: scaleY(1); transform-origin: bottom; }
 }
 .animate-candle { animation: candle-grow 0.6s ease-out forwards; }
+
+@keyframes reveal-letter {
+  0% { transform: translateY(20px); opacity: 0; filter: blur(10px); }
+  100% { transform: translateY(0); opacity: 0.04; filter: blur(0); }
+}
+.animate-reveal-letter {
+  animation: reveal-letter 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

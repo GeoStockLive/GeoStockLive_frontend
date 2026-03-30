@@ -18,6 +18,29 @@ export default function EarlyAccessPage() {
 
   return (
     <div className="shell items-center justify-center relative overflow-hidden">
+      {/* Top Left Branding */}
+      <div className="absolute top-8 left-8 z-50 flex items-center gap-2 animate-fade-in">
+        <div className="w-6 h-6 rounded-sm bg-cyan/10 border border-cyan/30 flex items-center justify-center">
+          <span className="font-space font-bold text-xs text-cyan">G</span>
+        </div>
+        <span className="font-space font-bold text-sm tracking-tighter text-text-base uppercase">GEOSTOCKLIVE</span>
+      </div>
+
+      {/* Large Background Animation */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0">
+        <div className="font-space font-bold text-[18vw] leading-none flex gap-[0.05em] whitespace-nowrap opacity-[0.03]">
+          {"GEOSTOCKLIVE".split('').map((char, i) => (
+            <span 
+              key={i} 
+              className="animate-reveal-letter inline-block"
+              style={{ animationDelay: `${i * 0.1}s`, opacity: 0 }}
+            >
+              {char}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Ambient background layers */}
       <div className="absolute inset-0 bg-obsidian" />
       <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(143,245,255,0.06) 0%, transparent 70%)' }} />
@@ -86,23 +109,9 @@ export default function EarlyAccessPage() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-12 animate-fade-up" style={{ animationDelay: '300ms' }}>
-          {[
-            { val: '142k+', label: 'Intelligence Signals Processed' },
-            { val: '0.4s',  label: 'Average AI Response Latency' },
-            { val: '99.8%', label: 'Uptime Guarantee (SLA)' },
-          ].map(s => (
-            <div key={s.label} className="text-center">
-              <div className="font-space font-bold text-3xl text-cyan mb-1">{s.val}</div>
-              <div className="text-[9px] font-mono text-text-muted uppercase">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* Footer */}
         <div className="text-[8px] font-mono text-text-muted animate-fade-up" style={{ animationDelay: '400ms' }}>
-          ADER COMMAND SYSTEMS · CLASSIFIED ACCESS ONLY · GT-OMEGA CLEARANCE REQUIRED
+          GEOSTOCKLIVE COMMAND SYSTEMS · CLASSIFIED ACCESS ONLY · GSL-ALPHA CLEARANCE REQUIRED
         </div>
       </div>
     </div>

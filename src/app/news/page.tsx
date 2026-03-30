@@ -22,7 +22,7 @@ export default function NewsFeed() {
     const fetchNews = async () => {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        const res = await fetch(`${apiBase}/signals/`); // Shared with signals or specific endpoint
+        const res = await fetch(`${apiBase}/events/`); // Fetching actual intelligence events instead of signals
         const data = await res.json();
         setNews(data);
       } catch (err) {
@@ -35,7 +35,7 @@ export default function NewsFeed() {
   }, []);
 
   return (
-    <div className="shell lowercase tracking-tight">
+    <div className="shell tracking-tight">
       <Sidebar />
       <div className="main-area">
         <Header subtitle="News Terminal: F6" />
@@ -68,7 +68,7 @@ export default function NewsFeed() {
                     {item.title}
                   </h3>
                   
-                  <p className="text-xs text-text-sub leading-relaxed line-clamp-4 italic border-l border-white/10 pl-3">
+                  <p className="text-sm text-text-base leading-relaxed line-clamp-4 italic border-l border-white/10 pl-3">
                     "{item.content}"
                   </p>
 

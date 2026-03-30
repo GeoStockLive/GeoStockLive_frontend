@@ -167,7 +167,7 @@ export default function RiskMatrixPage() {
               { label:'Active Satellites', val:'148 Nodes' },
               { label:'Encryption', val:'AES-512-GT' },
               { label:'Latency', val:'14ms' },
-              { label:'Terminal ID', val:'GT-OMEGA-01' },
+              { label:'Terminal ID', val:'GSL-ALPHA-01' },
             ].map(s => (
               <div key={s.label}>
                 <div className="text-[8px] font-mono text-text-muted uppercase">{s.label}</div>

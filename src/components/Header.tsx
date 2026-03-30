@@ -7,27 +7,22 @@ interface HeaderProps {
   unreadAlertCount?: number;
 }
 
-export default function Header({ brand = 'ADER', subtitle, onAlertClick, unreadAlertCount = 0 }: HeaderProps) {
+export default function Header({ brand = 'GeoStockLive', subtitle, onAlertClick, unreadAlertCount = 0 }: HeaderProps) {
   return (
     <header className="dash-header">
-      <div className="flex items-center gap-4">
-        <span className="font-space font-bold text-lg tracking-tighter text-text-base">{brand}</span>
+      <div className="flex items-center gap-3">
+        <div className="w-6 h-6 rounded-sm bg-cyan/10 border border-cyan/30 flex items-center justify-center">
+          <span className="font-space font-bold text-xs text-cyan">G</span>
+        </div>
+        <span className="font-space font-bold text-base tracking-tighter text-text-base uppercase">GEOSTOCKLIVE</span>
         {subtitle && <>
-          <div className="w-px h-4 bg-text-muted opacity-25" />
+          <div className="w-px h-4 bg-text-muted opacity-25 ml-2" />
           <span className="font-mono text-[10px] text-text-muted tracking-[0.15em] uppercase">{subtitle}</span>
         </>}
       </div>
 
       <div className="flex items-center gap-8">
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-mono text-text-sub uppercase tracking-wider">Tension Index</span>
-          <span className="font-space font-bold text-sm text-cyan">68.4</span>
-          <div className="w-1.5 h-1.5 rounded-full bg-cyan animate-signal" />
-        </div>
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-mono text-text-sub uppercase tracking-wider">XAU/USD</span>
-          <span className="font-space font-bold text-sm text-neon">+1.2%</span>
-        </div>
+        {/* Stats hidden until live connection */}
       </div>
 
       <div className="flex items-center gap-4">

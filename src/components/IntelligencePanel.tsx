@@ -171,10 +171,9 @@ const IntelligencePanel = ({ selectedCountry }: IntelligencePanelProps) => {
         </div>
       </div>
 
-      {/* Bottom Clearance Footer */}
       <div className="mt-auto pt-6 border-t border-white/5">
         <div className="text-center text-[7px] font-mono text-text-muted uppercase tracking-widest opacity-40">
-          GT-OMEGA CLEARANCE: LEVEL 5 REQUIRED FOR DEEP SECTOR ANALYSIS
+          GSL-ALPHA CLEARANCE: LEVEL 5 REQUIRED FOR DEEP SECTOR ANALYSIS
         </div>
       </div>
     </div>

@@ -26,7 +26,7 @@ const signals = [
 const microStream = [
   { asset: 'ETHUSD', msg: 'Spot inflow Detected ($142M)', time: '16:03s' },
   { asset: 'EURUSD', msg: 'Negative Sentiment Spike (Reuters)', time: '44:12s' },
-  { asset: 'GEN-AI', msg: 'GT-4 Initializing Sector Scan (Apr)', time: '52:40s' },
+  { asset: 'GEN-AI', msg: 'GSL-4 Initializing Sector Scan (Apr)', time: '52:40s' },
 ];
 
 export default function SignalsFeedPage() {
