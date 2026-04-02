@@ -9,16 +9,16 @@ const DashboardOverlay = () => {
       {/* Left Stats Overlay */}
       <div className="flex gap-12 pointer-events-auto">
         <div className="flex flex-col">
-          <span className="text-[10px] font-mono text-text-muted uppercase">Active Hotspots</span>
-          <span className="font-space font-bold text-lg text-text-primary uppercase tracking-tight">1,242</span>
+          <span className="text-[10px] font-mono text-text-muted uppercase">System Status</span>
+          <div className="flex items-center gap-2">
+            <span className="font-space font-bold text-lg text-secondary-neon-green uppercase tracking-tight">Online</span>
+            <div className="w-2 h-2 rounded-full bg-secondary-neon-green animate-pulse" />
+          </div>
         </div>
         
         <div className="flex flex-col">
-          <span className="text-[10px] font-mono text-text-muted uppercase">Sentiment Shift</span>
-          <div className="flex items-center gap-2">
-            <span className="font-space font-bold text-lg text-secondary-neon-green uppercase tracking-tight">+14.2%</span>
-            <div className="w-2 h-2 rounded-full bg-secondary-neon-green animate-pulse" />
-          </div>
+          <span className="text-[10px] font-mono text-text-muted uppercase">Data Sources</span>
+          <span className="font-space font-bold text-lg text-text-primary uppercase tracking-tight">RSS · Reddit</span>
         </div>
       </div>
 

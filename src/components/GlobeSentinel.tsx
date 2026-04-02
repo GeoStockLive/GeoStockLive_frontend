@@ -73,15 +73,15 @@ const GlobeSentinel = ({ onCountryClick }: GlobeSentinelProps) => {
       <div className="absolute bottom-10 left-0 right-0 flex items-end justify-between px-12 z-10 pointer-events-none">
         <div className="flex gap-10 pointer-events-auto">
           <div>
-            <div className="text-[8px] font-mono text-text-muted uppercase mb-1">Active Hotspots</div>
-            <div className="font-space font-bold text-lg text-text-base">1,242</div>
-          </div>
-          <div>
-            <div className="text-[8px] font-mono text-text-muted uppercase mb-1">Sentiment Shift</div>
+            <div className="text-[8px] font-mono text-text-muted uppercase mb-1">System Status</div>
             <div className="font-space font-bold text-lg text-neon flex items-center gap-2">
-              +14.2%
+              Online
               <div className="w-2 h-2 rounded-full bg-neon animate-signal" />
             </div>
+          </div>
+          <div>
+            <div className="text-[8px] font-mono text-text-muted uppercase mb-1">Data Sources</div>
+            <div className="font-space font-bold text-lg text-text-base">RSS · Reddit</div>
           </div>
         </div>
         <div className="flex bg-obsidian/70 backdrop-blur-tactical overflow-hidden pointer-events-auto">

@@ -102,25 +102,30 @@ const IntelligencePanel = ({ selectedCountry }: IntelligencePanelProps) => {
           </div>
         </div>
 
-        {/* Dynamic Affected Stocks Section */}
+        {/* Dynamic Affected Stocks Section — BUY / HOLD / SELL */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 px-1">
              <div className="w-1 h-3 bg-neon rounded-full" />
-             <span className="font-space font-bold text-[9px] text-text-base uppercase tracking-widest">Market Exposure</span>
+             <span className="font-space font-bold text-[9px] text-text-base uppercase tracking-widest">Stock Signal</span>
           </div>
           
           <div className="grid grid-cols-2 gap-2">
-             {intel?.events?.[0]?.assets?.map(asset => (
-                <div key={asset} className="p-2.5 bg-obsidian/40 border border-white/5 rounded-sm hover:border-cyan/30 transition-colors">
-                   <div className="text-[10px] font-space font-bold text-text-base mb-1">{asset}</div>
-                   <div className="flex items-center gap-1.5">
-                      <div className={`w-1.5 h-1.5 rounded-full ${score > 0.6 ? 'bg-tactical animate-pulse' : 'bg-neon'}`} />
-                      <span className={`text-[8px] font-mono uppercase ${score > 0.6 ? 'text-tactical' : 'text-neon'}`}>
-                        {score > 0.6 ? 'At Risk' : 'Secure'}
-                      </span>
-                   </div>
-                </div>
-             )) || (
+             {intel?.events?.[0]?.assets?.map(asset => {
+                const signal = score > 0.6 ? 'SELL' : score >= 0.3 ? 'HOLD' : 'BUY';
+                const sigColor = score > 0.6 ? '#ef4444' : score >= 0.3 ? '#eab308' : '#22c55e';
+                const sigBg = score > 0.6 ? 'bg-tactical' : score >= 0.3 ? 'bg-yellow-500' : 'bg-neon';
+                return (
+                  <div key={asset} className="p-2.5 bg-obsidian/40 border border-white/5 rounded-sm hover:border-cyan/30 transition-colors">
+                     <div className="text-[10px] font-space font-bold text-text-base mb-1">{asset}</div>
+                     <div className="flex items-center gap-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${sigBg} ${score > 0.6 ? 'animate-pulse' : ''}`} />
+                        <span className="text-[9px] font-mono font-bold uppercase" style={{ color: sigColor }}>
+                          {signal}
+                        </span>
+                     </div>
+                  </div>
+                );
+             }) || (
                <div className="col-span-2 py-4 text-center border border-dashed border-white/5 opacity-30 text-[8px] font-mono uppercase">Analyzing Sector Correlation...</div>
              )}
           </div>
@@ -151,13 +156,15 @@ const IntelligencePanel = ({ selectedCountry }: IntelligencePanelProps) => {
               {/* Multi-Source Verification UI */}
               <div className="flex items-center justify-between mt-1 pt-2 border-t border-white/5">
                 <div className="flex gap-2 grayscale brightness-150 opacity-40">
-                  {/* Icons represent News, Social, Video */}
+                  {/* Icons represent News, Social */}
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 11V1m3 0a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m3 4h12m-9 4h9m-9 4h9"/></svg>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                  {/* YOUTUBE DISABLED — icon commented out
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-1.94C18.88 4 12 4 12 4s-6.88 0-8.6.48a2.78 2.78 0 0 0-1.94 1.94C1 8.14 1 12 1 12s0 3.86.48 5.58a2.78 2.78 0 0 0 1.94 1.94C5.12 20 12 20 12 20s6.88 0 8.6-.48a2.78 2.78 0 0 0 1.94-1.94C23 15.86 23 12 23 12s0-3.86-.48-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+                  */}
                 </div>
                 <span className="text-[8px] font-mono font-bold text-cyan uppercase tracking-widest">
-                  Verified by {e.source_count}+ Channels
+                  Verified by {e.source_count}+ Sources
                 </span>
               </div>
             </div>
