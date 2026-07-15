@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import Sidebar from '@/components/Sidebar';
 import TradingChart from '@/components/TradingChart';
 
@@ -20,23 +21,81 @@ const SYMBOLS = [
 
 const API_KEY = '7c48d5d9a40542aa853b812fba65dff7';
 
-const bids = [
-  ['2319.42','14.8','22.40'],['2316.95','6.3','13.90'],
-  ['2530.09','29.1','62.20'],['2524.65','42.5','14.30'],
-  ['2321.10','8.2','3.70'],
-];
-const asks = [
-  ['2315.39','10.5','42.30'],['2316.40','20.1','71.40'],
-  ['2317.99','34.8','115.10'],['2317.58','13.2','18.20'],
-  ['2317.13','32.4','52.90'],['2316.99','6.4','14.80'],
-];
-
 export default function OrderBookPage() {
+  const { isLoaded, userId } = useAuth();
   const [symbol, setSymbol] = useState(SYMBOLS[0]);
-  const [interval, setInterval] = useState('5min');
+  const [chartInterval, setChartInterval] = useState('5min');
   const [orderType, setOrderType] = useState('Limit Order');
   const [qty, setQty] = useState('1.00');
-  const [price, setPrice] = useState('2318.42');
+  
+  const [livePrice, setLivePrice] = useState('0.00');
+  const [tradePrice, setTradePrice] = useState('0.00');
+  const [bids, setBids] = useState<string[][]>([]);
+  const [asks, setAsks] = useState<string[][]>([]);
+  const [tradeMsg, setTradeMsg] = useState('');
+
+  // Fetch Live Price and generate simulated L2 Order Book
+  useEffect(() => {
+    let active = true;
+    const fetchLivePrice = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/market/price?symbol=${symbol.id}`);
+        if (res.ok && active) {
+          const data = await res.json();
+          const p = data.price;
+          setLivePrice(p.toFixed(2));
+          setTradePrice(p.toFixed(2)); // Auto fill trade execution price
+          
+          // Generate realistic bids (below price) and asks (above price)
+          const newBids = [];
+          const newAsks = [];
+          for(let i=1; i<=6; i++) {
+            const spreadBid = p * (1 - (i * 0.0005));
+            const spreadAsk = p * (1 + (i * 0.0005));
+            newBids.push([spreadBid.toFixed(2), (Math.random()*50).toFixed(1), (Math.random()*100).toFixed(2)]);
+            newAsks.push([spreadAsk.toFixed(2), (Math.random()*50).toFixed(1), (Math.random()*100).toFixed(2)]);
+          }
+          setBids(newBids.slice(0, 5));
+          setAsks(newAsks.reverse());
+        }
+      } catch (err) {
+        console.error("Failed to fetch price:", err);
+      }
+    };
+    
+    fetchLivePrice();
+    const timer = window.setInterval(fetchLivePrice, 5000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [symbol]);
+
+  const handleTrade = async (action: 'BUY' | 'SELL') => {
+    if (!isLoaded || !userId) {
+      setTradeMsg('Auth Error'); return;
+    }
+    try {
+      setTradeMsg('Executing...');
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiBase}/portfolio/${userId}/trade`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          asset: symbol.id,
+          action: action,
+          quantity: parseFloat(qty)
+        })
+      });
+      if (res.ok) {
+        setTradeMsg(`${action} EXECUTED`);
+      } else {
+        const data = await res.json();
+        setTradeMsg(`ERROR: ${data.detail || 'Failed'}`);
+      }
+    } catch (e) {
+      setTradeMsg('SYS ERROR');
+    }
+    setTimeout(() => setTradeMsg(''), 3000);
+  };
 
   return (
     <div className="shell">
@@ -86,8 +145,8 @@ export default function OrderBookPage() {
                 {['1min', '5min', '15min', '1h', '1day'].map(t => (
                   <button 
                     key={t} 
-                    onClick={() => setInterval(t)}
-                    className={`text-[9px] font-mono px-2.5 py-1 rounded-sm transition-all ${interval === t ? 'bg-cyan text-obsidian font-bold' : 'text-text-muted hover:text-cyan'}`}
+                    onClick={() => setChartInterval(t)}
+                    className={`text-[9px] font-mono px-2.5 py-1 rounded-sm transition-all ${chartInterval === t ? 'bg-cyan text-obsidian font-bold' : 'text-text-muted hover:text-cyan'}`}
                   >
                     {t.toUpperCase()}
                   </button>
@@ -97,7 +156,7 @@ export default function OrderBookPage() {
 
             {/* TradingView Chart */}
             <div className="flex-1 bg-surface-low rounded-sm p-4 relative overflow-hidden min-h-[400px] animate-slide-in-left border border-white/5">
-              <TradingChart symbol={symbol.id} interval={interval} apiKey={API_KEY} />
+              <TradingChart symbol={symbol.id} interval={chartInterval} apiKey={API_KEY} />
             </div>
 
             {/* Execute Panel */}
@@ -116,7 +175,7 @@ export default function OrderBookPage() {
                 </div>
                 <div>
                   <label className="text-[8px] font-mono text-text-muted uppercase block mb-1">Price/Bid</label>
-                  <input value={price} onChange={e => setPrice(e.target.value)}
+                  <input value={tradePrice} onChange={e => setTradePrice(e.target.value)}
                     className="w-full bg-obsidian text-text-base text-xs font-mono px-3 py-2 rounded-sm border border-surface-bright outline-none" />
                 </div>
               </div>
@@ -130,16 +189,25 @@ export default function OrderBookPage() {
                   <button key={p} className="flex-1 py-1.5 text-[9px] font-mono text-text-muted border border-surface-bright rounded-sm hover:border-cyan hover:text-cyan transition-all">{p}</button>
                 ))}
               </div>
+              {tradeMsg && (
+                <div className={`mb-3 text-[10px] font-mono p-2 rounded-sm ${tradeMsg.includes('ERROR') ? 'bg-tactical/20 text-tactical' : 'bg-neon/20 text-neon'}`}>
+                  {tradeMsg}
+                </div>
+              )}
               <div className="flex gap-2">
-                <button className="flex-1 py-3 font-space font-bold text-xs rounded-sm flex items-center justify-center gap-2 transition-all hover:brightness-110"
+                <button 
+                  onClick={() => handleTrade('BUY')}
+                  className="flex-1 py-3 font-space font-bold text-xs rounded-sm flex items-center justify-center gap-2 transition-all hover:brightness-110"
                   style={{ background: 'linear-gradient(135deg,#00fc40,#00c832)', color:'#001a0a' }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                  BUY XAU
+                  BUY {symbol.id.split('/')[0]}
                 </button>
-                <button className="flex-1 py-3 font-space font-bold text-xs rounded-sm flex items-center justify-center gap-2 transition-all hover:brightness-110"
+                <button 
+                  onClick={() => handleTrade('SELL')}
+                  className="flex-1 py-3 font-space font-bold text-xs rounded-sm flex items-center justify-center gap-2 transition-all hover:brightness-110"
                   style={{ background: 'linear-gradient(135deg,#ff716c,#e84040)', color:'#1a0000' }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14"/><path d="M12 19l-7-7 7-7"/></svg>
-                  SELL XAU
+                  SELL {symbol.id.split('/')[0]}
                 </button>
               </div>
             </div>
@@ -168,9 +236,9 @@ export default function OrderBookPage() {
 
             {/* Spread */}
             <div className="flex items-center gap-3 px-4 py-2 bg-obsidian border-y border-surface-high">
-              <span className="font-space font-bold text-sm text-text-base">2398.92</span>
+              <span className="font-space font-bold text-sm text-text-base">{livePrice}</span>
               <span className="text-[8px] font-mono text-text-muted">←</span>
-              <span className="badge-cyber">SPREAD 4.13</span>
+              <span className="badge-cyber">SPREAD {(parseFloat(livePrice) * 0.001).toFixed(2)}</span>
             </div>
 
             {/* Bids */}

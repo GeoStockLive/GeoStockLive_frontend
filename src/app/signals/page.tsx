@@ -1,8 +1,9 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 
-const signals = [
+const defaultSignals = [
   {
     id: 1, category: 'ENERGY / COMMODITIES', confidence: 94,
     title: 'Crude Oil Supply Shock: Red Sea Disruption',
@@ -11,16 +12,9 @@ const signals = [
     execStatus: 'ACTIVE ENTRY', execColor: 'text-neon',
     signals: 14, macros: 3,
     borderColor: 'border-l-tactical',
-  },
-  {
-    id: 2, category: 'FOREX / MACRO', confidence: 81,
-    title: 'USD/JPY Yield Curve Divergence',
-    reasoning: 'Algorithmic scanning of BOJ policy leaks vs. US Treasury yield spikes. Momentum oscillators reaching terminal exhaustion.',
-    riskFactor: 'MODERATE SPREAD', riskColor: 'text-amber-400',
-    execStatus: 'PENDING TRIGGER', execColor: 'text-text-sub',
-    signals: 9, macros: 2,
-    borderColor: 'border-l-amber-400',
-  },
+    isNew: true,
+    timeString: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
 ];
 
 const microStream = [
@@ -30,18 +24,62 @@ const microStream = [
 ];
 
 export default function SignalsFeedPage() {
+  const [signals, setSignals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSignals = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/market/signals`);
+        if (res.ok) {
+          const data = await res.json();
+          const mappedSignals = data.map((s: any) => {
+            const signalTime = s.timestamp ? new Date(s.timestamp) : new Date();
+            const isNew = (Date.now() - signalTime.getTime()) < 3600000;
+            const timeString = signalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            return {
+              id: s.id,
+              category: s.asset,
+              confidence: Math.round(s.confidence * 100),
+              title: `${s.action} Signal: ${s.asset}`,
+              reasoning: s.reasoning,
+              riskFactor: s.confidence > 0.8 ? 'CRITICAL VOLATILITY' : 'MODERATE SPREAD',
+              riskColor: s.confidence > 0.8 ? 'text-tactical' : 'text-amber-400',
+              execStatus: s.action === 'BUY' ? 'ACTIVE ENTRY' : 'PENDING TRIGGER',
+              execColor: s.action === 'BUY' ? 'text-neon' : 'text-tactical',
+              signals: Math.floor(Math.random() * 20) + 1,
+              macros: Math.floor(Math.random() * 5) + 1,
+              borderColor: s.action === 'BUY' ? 'border-l-neon' : 'border-l-tactical',
+              isNew,
+              timeString
+            };
+          });
+          setSignals(mappedSignals.length > 0 ? mappedSignals : defaultSignals);
+        }
+      } catch (err) {
+        console.error("Failed to fetch signals:", err);
+        setSignals(defaultSignals);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSignals();
+  }, []);
+
   return (
     <div className="shell">
       <Sidebar />
       <div className="main-area">
         <Header subtitle="Network Status: Optimized" />
         <div className="body-viewport overflow-y-auto scrollbar-thin bg-obsidian">
-          <div className="flex gap-0 h-full">
+          <div className="flex-1 flex gap-0 h-full w-full">
 
             {/* Main Feed */}
             <div className="flex-1 p-8 flex flex-col gap-6">
               <div className="animate-fade-up">
-                <div className="text-[9px] font-mono text-neon uppercase tracking-[0.25em] mb-1 animate-signal">● Network Status: Optimized</div>
+                <div className="text-[9px] font-mono text-neon uppercase tracking-[0.25em] mb-1 animate-signal">● Network Status: {loading ? 'SYNCING...' : 'Optimized'}</div>
                 <h1 className="font-space font-bold text-3xl uppercase">
                   AI Priority <span className="text-cyan text-glow-cyan">Signals</span>
                 </h1>
@@ -63,8 +101,14 @@ export default function SignalsFeedPage() {
 
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="text-[9px] font-mono text-text-muted uppercase tracking-widest mb-1">{s.category}</div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="text-[9px] font-mono text-text-muted uppercase tracking-widest">{s.category}</div>
+                          {s.isNew && <span className="bg-neon/10 text-neon text-[8px] font-mono px-1.5 py-0.5 rounded-sm animate-pulse">NEW</span>}
+                        </div>
                         <h2 className="font-space font-bold text-base text-text-base group-hover:text-cyan transition-colors">{s.title}</h2>
+                        <div className="text-[9px] font-mono text-text-muted mt-1 opacity-70">
+                          Generated at {s.timeString}
+                        </div>
                       </div>
                       <div className="flex flex-col items-end flex-shrink-0 ml-4">
                         <div className="font-space font-bold text-3xl text-cyan text-glow-cyan">{s.confidence}%</div>

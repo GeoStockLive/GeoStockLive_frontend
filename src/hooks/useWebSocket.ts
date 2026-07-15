@@ -10,7 +10,7 @@ export interface Alert {
 }
 
 export interface WebSocketMessage {
-  type: 'alert' | 'signal' | 'risk_update';
+  type: 'alert' | 'signal' | 'risk_update' | 'live_signal';
   data: any;
 }
 
@@ -35,11 +35,12 @@ export function useWebSocket() {
     const connect = () => {
       if (isIntentionalClose.current) return;
 
+      console.log(`[WS] Attempting connection to: ${url}`);
       try {
         socket = new WebSocket(url);
 
         socket.onopen = () => {
-          console.log('[WS] Connected to dashboard stream');
+          console.log('[WS] Connection established successfully');
           setIsConnected(true);
           reconnectAttempts.current = 0;
         };
@@ -57,37 +58,43 @@ export function useWebSocket() {
                 signals: message.data.signals,
               };
               addAlert(newAlert);
-              
-              // Trigger a custom event for the Toast system
               window.dispatchEvent(new CustomEvent('gt-alert', { detail: newAlert }));
+            } else if (message.type === 'risk_update') {
+              // Dispatch risk_update event
+              window.dispatchEvent(new CustomEvent('gt-risk-update', { detail: message.data }));
+            } else if (message.type === 'live_signal') {
+              // Dispatch live_signal event
+              window.dispatchEvent(new CustomEvent('gt-live-signal', { detail: message.data }));
             }
           } catch (err) {
             console.error('[WS] Failed to parse message:', err);
           }
         };
 
-        socket.onclose = () => {
+        socket.onclose = (event) => {
           setIsConnected(false);
           if (!isIntentionalClose.current) {
             const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
-            console.log(`[WS] Connection closed. Retrying in ${delay}ms...`);
+            console.warn(`[WS] Connection closed (Code: ${event.code}, Reason: ${event.reason || 'None'}). Retrying in ${delay}ms...`);
             reconnectTimeout = setTimeout(connect, delay);
             reconnectAttempts.current += 1;
           }
         };
 
         socket.onerror = (err) => {
-          console.error('[WS] Connection error:', err);
+          console.error('[WS] Protocol/Handshake error:', err);
         };
       } catch (err) {
-        console.error('[WS] Setup error:', err);
+        console.error('[WS] Setup exception:', err);
       }
     };
 
-    connect();
+    // Small delay to ensure hydration/env-vars are stable
+    const timer = setTimeout(connect, 500);
 
     return () => {
       isIntentionalClose.current = true;
+      clearTimeout(timer);
       if (socket) socket.close();
       clearTimeout(reconnectTimeout);
     };

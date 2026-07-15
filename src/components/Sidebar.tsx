@@ -15,11 +15,7 @@ export default function Sidebar() {
   const path = usePathname();
   return (
     <aside className="sidebar h-screen shadow-panel">
-      {/* Brand */}
-      <div className="w-9 h-9 mb-8 flex-shrink-0 animate-pulse-cyan"
-           style={{ background: '#8ff5ff', display:'flex', alignItems:'center', justifyContent:'center' }}>
-        <div style={{ width:12, height:12, background:'#0a0e14' }} />
-      </div>
+      {/* Brand space removed */}
 
       {/* Primary Nav */}
       <nav className="flex flex-col gap-1 flex-1 w-full items-center">

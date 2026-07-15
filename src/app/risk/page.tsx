@@ -1,8 +1,9 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 
-const matrix = [
+const defaultMatrix = [
   { region: 'East Asia',       geo: 'critical', fin: 'low',      inf: 'elevated', cyber: 'guarded', geoLabel:'Tension High', finLabel:'Stable', infLabel:'Supply Chain', cyberLabel:'Fortified' },
   { region: 'Middle East',     geo: 'critical', fin: 'elevated', inf: 'low',      cyber: 'critical', geoLabel:'Conflict Zone', finLabel:'Currency Vol', infLabel:'Active', cyberLabel:'Breached' },
   { region: 'European Union',  geo: 'guarded',  fin: 'elevated', inf: 'low',      cyber: 'guarded', geoLabel:'Stable-ish', finLabel:'Equity Spill', infLabel:'No Alert', cyberLabel:'Guarded' },
@@ -24,6 +25,28 @@ const cellLabel: Record<string, string> = {
 };
 
 export default function RiskMatrixPage() {
+  const [matrix, setMatrix] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMatrix = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/risk/matrix`);
+        if (res.ok) {
+          const data = await res.json();
+          setMatrix(data.length > 0 ? data : defaultMatrix);
+        }
+      } catch (err) {
+        console.error("Failed to fetch risk matrix:", err);
+        setMatrix(defaultMatrix);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMatrix();
+  }, []);
+
   return (
     <div className="shell">
       <Sidebar />
@@ -42,7 +65,7 @@ export default function RiskMatrixPage() {
             <div className="flex items-center gap-3">
               <div className="text-right">
                 <div className="text-[9px] font-mono text-text-muted uppercase">Last Global Sync</div>
-                <div className="font-mono text-[11px] text-cyan font-bold">04/12:09 UTC</div>
+                <div className="font-mono text-[11px] text-cyan font-bold">{loading ? 'SYNCING...' : new Date().toLocaleTimeString('en-US', { hour12: false, timeZone: 'UTC' }) + ' UTC'}</div>
               </div>
               <button className="btn-outline flex items-center gap-2">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

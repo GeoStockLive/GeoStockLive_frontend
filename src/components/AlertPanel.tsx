@@ -14,7 +14,7 @@ export default function AlertPanel({ alerts, isOpen, onClose }: AlertPanelProps)
 
   return (
     <div className="fixed inset-y-0 right-0 w-80 bg-surface-low border-l border-surface-high z-[90] shadow-2xl flex flex-col animate-slide-in-right">
-      <div className="p-4 border-b border-surface-high flex justify-between items-center bg-obsidian">
+      <div className="p-4 border-b border-surface-high flex justify-between items-center bg-background-primary">
         <div>
           <h3 className="font-space font-bold uppercase text-xs tracking-widest text-cyan">Intelligence Log</h3>
           <span className="text-[8px] font-mono text-text-muted mt-0.5 block uppercase tracking-tighter">Live Session Feed</span>
@@ -31,8 +31,8 @@ export default function AlertPanel({ alerts, isOpen, onClose }: AlertPanelProps)
             <span className="text-[10px] mt-4 font-mono uppercase tracking-[0.2em]">Silence across sectors</span>
           </div>
         ) : (
-          alerts.map((alert) => (
-            <div key={alert.id} className={`p-3 border-l-2 rounded-sm bg-surface-high/50 transition-all hover:bg-surface-high ${alert.risk === 'HIGH' ? 'border-tactical shadow-[inset_4px_0_10px_-4px_#ff716c33]' : 'border-cyan'}`}>
+          alerts.map((alert, idx) => (
+            <div key={alert.id || idx} className={`p-3 border-l-2 rounded-sm bg-surface-high/50 transition-all hover:bg-surface-high ${alert.risk === 'HIGH' ? 'border-tactical shadow-[inset_4px_0_10px_-4px_#ff716c33]' : 'border-cyan'}`}>
               <div className="flex justify-between items-start mb-1">
                 <span className={`text-[10px] font-space font-bold tracking-tight ${alert.risk === 'HIGH' ? 'text-tactical' : 'text-cyan'}`}>
                   {alert.title}
@@ -44,8 +44,8 @@ export default function AlertPanel({ alerts, isOpen, onClose }: AlertPanelProps)
               </p>
               {alert.signals && alert.signals.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {alert.signals.map(s => (
-                    <span key={s} className="px-1.5 py-0.5 rounded-[1px] bg-obsidian text-[8px] font-mono text-neon border border-neon/30">
+                  {alert.signals.map((s, sIdx) => (
+                    <span key={`${s}-${sIdx}`} className="px-1.5 py-0.5 rounded-[1px] bg-background-primary text-[8px] font-mono text-neon border border-neon/30">
                       {s}
                     </span>
                   ))}
@@ -56,7 +56,7 @@ export default function AlertPanel({ alerts, isOpen, onClose }: AlertPanelProps)
         )}
       </div>
 
-      <div className="p-4 bg-obsidian border-t border-surface-high">
+      <div className="p-4 bg-background-primary border-t border-surface-high">
         <button className="w-full py-2 bg-surface-high hover:bg-white/5 border border-white/5 text-[9px] font-mono uppercase tracking-[0.1em] text-text-muted transition-colors">
           Export Intelligence Log (PDF)
         </button>

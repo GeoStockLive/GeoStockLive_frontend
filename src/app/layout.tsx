@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,7 +9,13 @@ const inter = Inter({
 });
 
 const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space",
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ['400', '500', '600'],
+  variable: "--font-ibm-plex-mono",
   subsets: ["latin"],
 });
 
@@ -23,10 +30,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="antialiased overflow-hidden">
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable}`}>
+        <body className="antialiased overflow-hidden" suppressHydrationWarning>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -75,7 +75,7 @@ export default function TradingChart({ symbol, interval, apiKey }: TradingChartP
     const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#8ff5ff', // Cyan-like color for text
+        textColor: '#C5A880', // Cyan-like color for text
       },
       grid: {
         vertLines: { color: 'rgba(143, 245, 255, 0.05)' },
@@ -125,28 +125,28 @@ export default function TradingChart({ symbol, interval, apiKey }: TradingChartP
   }, [symbol, interval, fetchHistory]);
 
   return (
-    <div className="relative w-full h-[400px] border border-white/5 rounded-sm overflow-hidden bg-obsidian/40">
+    <div className="relative w-full h-[400px] border border-white/5 rounded-sm overflow-hidden bg-background-primary/40">
       <div ref={chartContainerRef} className="absolute inset-0 w-full h-full" />
       
       {/* Loading Overlay */}
       {loading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-obsidian/60 backdrop-blur-[2px]">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background-primary/60 backdrop-blur-[2px]">
           <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-cyan/20 border-t-cyan rounded-full animate-spin" />
-            <span className="text-[10px] font-mono text-cyan animate-pulse uppercase tracking-widest">Synchronizing Data...</span>
+            <div className="w-8 h-8 border-2 border-gold-primary/20 border-t-cyan rounded-full animate-spin" />
+            <span className="text-[10px] font-mono text-gold-primary animate-pulse uppercase tracking-widest">Synchronizing Data...</span>
           </div>
         </div>
       )}
 
       {/* Error Overlay */}
       {error && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-obsidian/80 backdrop-blur-sm">
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-background-primary/80 backdrop-blur-sm">
           <div className="max-w-[80%] text-center p-4 border border-tactical/30 bg-tactical/5 rounded-sm">
             <div className="text-tactical text-xs font-mono mb-2 uppercase font-bold tracking-tighter">Request Failed</div>
             <div className="text-[10px] font-mono text-text-muted mb-4">{error}</div>
             <button 
               onClick={() => fetchHistory()}
-              className="px-4 py-2 border border-cyan/40 text-cyan text-[10px] font-mono hover:bg-cyan/10 transition-colors uppercase"
+              className="px-4 py-2 border border-gold-primary/40 text-gold-primary text-[10px] font-mono hover:bg-gold-primary/10 transition-colors uppercase"
             >
               Retry Connection
             </button>
@@ -156,10 +156,10 @@ export default function TradingChart({ symbol, interval, apiKey }: TradingChartP
 
       {/* Decorative Hud Element */}
       <div className="absolute top-2 left-2 z-10 flex gap-2">
-        <span className="text-[10px] font-mono bg-obsidian/60 px-2 py-0.5 border border-cyan/20 rounded-sm text-cyan backdrop-blur-sm">
+        <span className="text-[10px] font-mono bg-background-primary/60 px-2 py-0.5 border border-gold-primary/20 rounded-sm text-gold-primary backdrop-blur-sm">
           {symbol} / {interval}
         </span>
-        <span className="text-[10px] font-mono bg-obsidian/60 px-2 py-0.5 border border-neon/20 rounded-sm text-neon backdrop-blur-sm animate-pulse">
+        <span className="text-[10px] font-mono bg-background-primary/60 px-2 py-0.5 border border-neon/20 rounded-sm text-neon backdrop-blur-sm animate-pulse">
           LIVE FEED
         </span>
       </div>
