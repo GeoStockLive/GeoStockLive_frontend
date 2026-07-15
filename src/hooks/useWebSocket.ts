@@ -10,7 +10,7 @@ export interface Alert {
 }
 
 export interface WebSocketMessage {
-  type: 'alert' | 'signal' | 'risk_update';
+  type: 'alert' | 'signal' | 'risk_update' | 'live_signal';
   data: any;
 }
 

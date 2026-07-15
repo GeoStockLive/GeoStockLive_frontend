@@ -4,7 +4,25 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Globe, BrainCircuit, ShieldAlert, Zap } from "lucide-react";
 
-const pipelineStages = [
+interface MetaItem {
+  label: string;
+  value: string;
+  isGreen?: boolean;
+  isRed?: boolean;
+  isGold?: boolean;
+  large?: boolean;
+}
+
+interface PipelineStage {
+  id: string;
+  title: string;
+  subtitle: string;
+  desc: string;
+  icon: any;
+  meta: MetaItem[];
+}
+
+const pipelineStages: PipelineStage[] = [
   {
     id: "01",
     title: "INGEST",

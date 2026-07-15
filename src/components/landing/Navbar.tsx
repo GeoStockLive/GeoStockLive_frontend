@@ -97,7 +97,7 @@ function AuthButtons() {
         Dashboard
         <ArrowUpRight className="w-3.5 h-3.5" />
       </Link>
-      <UserButton afterSignOutUrl="/" appearance={{
+      <UserButton appearance={{
         elements: {
           userButtonAvatarBox: "w-10 h-10 border-2 border-gold-primary/20",
         }
