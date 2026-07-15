@@ -1,19 +1,13 @@
 'use client';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 
-const barData = [42, 55, 48, 61, 58, 70, 67, 75, 80, 92];
-
-const events = [
+const defaultEvents = [
   { type: 'SHOCK EVENT', color: 'text-tactical bg-tactical/10', title: 'Central Bank Rate Shift: Unexpected Dovish Pivot', date: '2025.3.12 FRI 4:4:05', entry: '$2,520.40', exit: '$2,558.30', pnl: '+$2,840', pnlColor: 'text-neon' },
   { type: 'SIGNAL ENCODE', color: 'text-cyan bg-cyan-dim', title: 'XAU/USD Long Pulse', link: '$2,530.50 / $2,540.30', pnl: '', pnlColor: '' },
   { type: 'ACTIVE ANALYSIS', color: 'text-amber-400 bg-amber-400/10', title: 'WTI Crude Correction', desc: 'Expire chain distortion in front-month deliveries detected via satellite data.', age: '1h ago', pnl: '', pnlColor: '' },
-];
-
-const logs = [
-  { ts: '2025.3.1 FRI 05:44:00', id: 'TX-R6558A', pair: 'USDJPY', type: 'Short – Scalp', pnl: '+$2.4 pips', status: 'EXEC' },
-  { ts: '2025.3.1 FRI 03:31:14', id: 'TX-M65566', pair: 'ETH/USD', type: 'Long – Swing', pnl: '',            status: 'ACTIVE' },
-  { ts: '2025.3.1 FRI 01:04:14', id: 'TX-R6U663', pair: 'BRENT CRUDE', type: 'Limit Order', pnl: '-4,320', status: 'EXPIRED' },
 ];
 
 const statusColor: Record<string,string> = {
@@ -21,6 +15,42 @@ const statusColor: Record<string,string> = {
 };
 
 export default function HistoryPage() {
+  const { isLoaded, userId } = useAuth();
+  const [logs, setLogs] = useState<any[]>([]);
+  const [barData, setBarData] = useState<number[]>([50, 50, 50, 50, 50, 50, 50, 50, 50, 50]);
+  const [winLossRatio, setWinLossRatio] = useState<string>('0.00 : 1');
+  
+  useEffect(() => {
+    if (!isLoaded || !userId) return;
+    
+    const fetchHistory = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/portfolio/${userId}/history`);
+        if (res.ok) {
+          const data = await res.json();
+          setBarData(data.performance.bar_data);
+          setWinLossRatio(data.performance.win_loss_ratio);
+          
+          // Map backend trades to frontend log format
+          const mappedLogs = data.trades.map((t: any) => ({
+            ts: new Date(t.timestamp).toLocaleString(),
+            id: `TX-${t.id}`,
+            pair: t.asset,
+            type: t.action,
+            pnl: '—', // Since paper trades don't close out PNL directly here
+            status: 'EXEC'
+          }));
+          setLogs(mappedLogs);
+        }
+      } catch (err) {
+        console.error("Failed to fetch history", err);
+      }
+    };
+    
+    fetchHistory();
+  }, [isLoaded, userId]);
+
   return (
     <div className="shell">
       <Sidebar />
@@ -31,7 +61,7 @@ export default function HistoryPage() {
           {/* Header Row */}
           <div className="flex items-center justify-between mb-2 animate-fade-up">
             <div>
-              <div className="section-label">System Audit: 16,386 Events Logged · Last Sync 0.01s ago</div>
+              <div className="section-label">System Audit: {logs.length} Events Logged · Last Sync 0.01s ago</div>
               <h1 className="font-space font-bold text-2xl text-text-base uppercase">Historical Archive</h1>
             </div>
             <div className="flex gap-2">
@@ -79,7 +109,7 @@ export default function HistoryPage() {
             {/* Stat Cards */}
             <div className="flex flex-col gap-3">
               {[
-                { label: 'Win / Loss Ratio', val: '4.82 : 1', icon: '↗', color: 'text-neon' },
+                { label: 'Win / Loss Ratio', val: winLossRatio, icon: '↗', color: 'text-neon' },
                 { label: 'WFC Transaction',  val: '2.14%',    icon: '↘', color: 'text-tactical' },
                 { label: 'Volatility Exposure', val: 'Low / Med', icon: '🛡', color: 'text-cyan' },
               ].map(s => (
@@ -96,7 +126,7 @@ export default function HistoryPage() {
 
           {/* Event Cards */}
           <div className="grid grid-cols-3 gap-3 animate-fade-up">
-            {events.map((e, i) => (
+            {defaultEvents.map((e, i) => (
               <div key={i} className="card-low border-l-2 border-l-surface-bright relative">
                 <span className={`text-[8px] font-mono px-1.5 py-0.5 rounded-sm ${e.color}`}>{e.type}</span>
                 {e.date && <div className="text-[8px] font-mono text-text-muted mt-1">{e.date}</div>}

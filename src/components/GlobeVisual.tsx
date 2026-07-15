@@ -40,10 +40,26 @@ export default function GlobeVisual({ onCountryClick }: GlobeVisualProps) {
     fetch(`${apiBase}/risk/`)
       .then(res => res.json())
       .then(data => {
-        console.log('[GLOBE] Received risk scores:', data);
+        console.log('[GLOBE] Received initial risk scores:', data);
         setRiskScores(data);
       })
       .catch(err => console.error('[GLOBE] Failed to sync risk data:', err));
+
+    // Listen for real-time risk updates from WebSocket
+    const handleRiskUpdate = (event: any) => {
+      const { country, risk_score } = event.detail;
+      if (country && risk_score !== undefined) {
+        setRiskScores(prev => ({
+          ...prev,
+          [country]: risk_score
+        }));
+      }
+    };
+    
+    window.addEventListener('gt-risk-update', handleRiskUpdate);
+    return () => {
+      window.removeEventListener('gt-risk-update', handleRiskUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -65,7 +81,8 @@ export default function GlobeVisual({ onCountryClick }: GlobeVisualProps) {
     const name = d.properties.NAME || d.properties.ADMIN;
     const score = riskScores[name]; // backend returns {"CountryName": score}
     
-    if (score === undefined) return LOCAL_RISK_COLORS.UNKNOWN;
+    // Default to LOW (Green) if no specific score found, ensuring all countries are colored
+    if (score === undefined) return RISK_COLORS.LOW;
     
     // Internal color mapping
     if (score >= 0.7) return RISK_COLORS.HIGH;
@@ -79,7 +96,7 @@ export default function GlobeVisual({ onCountryClick }: GlobeVisualProps) {
         ref={globeEl}
         backgroundColor="rgba(0,0,0,0)"
         showAtmosphere={true}
-        atmosphereColor="#8ff5ff"
+        atmosphereColor="#C5A880"
         atmosphereAltitude={0.15}
         
         // Country Polygons
@@ -87,19 +104,30 @@ export default function GlobeVisual({ onCountryClick }: GlobeVisualProps) {
         polygonCapColor={getCountryColor}
         polygonSideColor={() => 'rgba(15, 20, 26, 0.4)'}
         polygonStrokeColor={() => '#0a0e14'}
-        polygonAltitude={0.01}
+        // Interaction
         onPolygonClick={(polygon: any) => {
-          if (onCountryClick) {
-            onCountryClick(polygon.properties.NAME || polygon.properties.ADMIN);
+          const name = polygon?.properties?.NAME || polygon?.properties?.name || polygon?.properties?.ADMIN || polygon?.properties?.admin;
+          console.info(`[GLOBE] Selection event fired for: ${name}`);
+          
+          if (typeof window !== 'undefined') {
+            (window as any)._LAST_SELECTION = name;
+            document.body.setAttribute('data-last-selection', name);
           }
+
+          if (name && onCountryClick) {
+            onCountryClick(name);
+          }
+        }}
+        onGlobeClick={() => {
+          console.info('[GLOBE] Background clicked - NOT clearing selection.');
         }}
         
         // Aesthetic
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
         
-        width={600}
-        height={600}
+        width={500}
+        height={500}
       />
     </div>
   );

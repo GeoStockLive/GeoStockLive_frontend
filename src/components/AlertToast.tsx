@@ -24,7 +24,7 @@ export default function AlertToast() {
 
   if (!activeAlert) return null;
 
-  const colorStyle = activeAlert.risk === 'HIGH' ? 'border-tactical text-tactical bg-tactical/10' : 'border-cyan text-cyan bg-obsidian/90';
+  const colorStyle = activeAlert.risk === 'HIGH' ? 'border-tactical text-tactical bg-tactical/10' : 'border-cyan text-cyan bg-background-primary/90';
 
   return (
     <div className={`fixed top-6 right-6 z-[100] w-80 animate-slide-in-right`}>

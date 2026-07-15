@@ -1,119 +1,31 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { Navbar } from "@/components/landing/Navbar";
+import { HeroSection } from "@/components/landing/HeroSection";
+import { IntelligenceMetrics } from "@/components/landing/IntelligenceMetrics";
+import { PipelineSection } from "@/components/landing/PipelineSection";
+import { LiveSignalHUD } from "@/components/landing/LiveSignalHUD";
+import { GlobalRiskMap } from "@/components/landing/GlobalRiskMap";
+import { ArchitectureSection } from "@/components/landing/ArchitectureSection";
+import { PricingSection } from "@/components/landing/PricingSection";
+import { AboutSection } from "@/components/landing/AboutSection";
 
-export default function EarlyAccessPage() {
-  const [email, setEmail] = useState('');
-  const [joined, setJoined] = useState(false);
-  const router = useRouter();
+import { FinalCTA } from "@/components/landing/FinalCTA";
+import { Footer } from "@/components/landing/Footer";
 
-  useEffect(() => {
-    if (joined) {
-      const timer = setTimeout(() => {
-        router.push('/pulse');
-      }, 2000); // 2s delay to show the success state
-      return () => clearTimeout(timer);
-    }
-  }, [joined, router]);
-
+export default function Home() {
   return (
-    <div className="shell items-center justify-center relative overflow-hidden">
-      {/* Top Left Branding */}
-      <div className="absolute top-8 left-8 z-50 flex items-center gap-2 animate-fade-in">
-        <div className="w-6 h-6 rounded-sm bg-cyan/10 border border-cyan/30 flex items-center justify-center">
-          <span className="font-space font-bold text-xs text-cyan">G</span>
-        </div>
-        <span className="font-space font-bold text-sm tracking-tighter text-text-base uppercase">GEOSTOCKLIVE</span>
-      </div>
-
-      {/* Large Background Animation */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0">
-        <div className="font-space font-bold text-[18vw] leading-none flex gap-[0.05em] whitespace-nowrap opacity-[0.03]">
-          {"GEOSTOCKLIVE".split('').map((char, i) => (
-            <span 
-              key={i} 
-              className="animate-reveal-letter inline-block"
-              style={{ animationDelay: `${i * 0.1}s`, opacity: 0 }}
-            >
-              {char}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Ambient background layers */}
-      <div className="absolute inset-0 bg-obsidian" />
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(143,245,255,0.06) 0%, transparent 70%)' }} />
-      <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'linear-gradient(rgba(143,245,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(143,245,255,0.4) 1px, transparent 1px)', backgroundSize: '80px 80px' }} />
-
-      {/* Floating orbs */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full animate-float" style={{ background: 'radial-gradient(circle, rgba(143,245,255,0.05), transparent 70%)' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full animate-float" style={{ background: 'radial-gradient(circle, rgba(0,252,64,0.04), transparent 70%)', animationDelay: '3s' }} />
-
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center gap-16 px-8 max-w-5xl w-full">
-        {/* System Status */}
-        <div className="flex items-center gap-3 animate-fade-up">
-          <div className="w-2 h-2 rounded-full bg-neon animate-signal" />
-          <span className="text-[10px] font-mono text-neon uppercase tracking-[0.3em]">System Online · Accepting Early Access Requests</span>
-        </div>
-
-        {/* Main Headline */}
-        <div className="text-center animate-fade-up" style={{ animationDelay: '100ms' }}>
-          <h1 className="font-space font-bold text-5xl text-text-base uppercase leading-tight mb-4" style={{ letterSpacing: '-0.03em' }}>
-            The Future of<br />
-            <span className="text-cyan text-glow-cyan">Synthetic Intel.</span>
-          </h1>
-          <p className="text-sm text-text-sub max-w-lg mx-auto leading-relaxed">
-            AI-driven geopolitical intelligence, real-time risk synthesis, and tactical market signals — all in one command terminal.
-          </p>
-        </div>
-
-        {/* Waitlist Card */}
-        <div className="w-full max-w-md animate-fade-up" style={{ animationDelay: '200ms' }}>
-          <div className="bg-surface-low/80 backdrop-blur-tactical rounded-sm p-8 shadow-cyan-lg">
-            <div className="section-label mb-1">Request Early Access</div>
-            <div className="font-space font-bold text-lg text-text-base mb-6">Join the Waitlist</div>
-
-            {joined ? (
-              <div className="flex flex-col items-center gap-3 py-6">
-                <div className="w-12 h-12 rounded-full bg-neon/20 flex items-center justify-center animate-pulse-cyan">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00fc40" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                </div>
-                <div className="font-space font-bold text-neon">Access Requested</div>
-                <div className="text-[10px] font-mono text-text-muted text-center">You are in the queue. Expect confirmation within 48 hours.</div>
-              </div>
-            ) : (
-              <>
-                <div className="mb-4">
-                  <label className="text-[9px] font-mono text-text-muted uppercase tracking-widest block mb-2">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="operator@intel.gov"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="w-full bg-obsidian text-text-base text-sm font-mono px-4 py-3 rounded-sm border border-surface-bright outline-none focus:border-cyan transition-colors placeholder:text-text-muted"
-                  />
-                </div>
-                <button
-                  onClick={() => email && setJoined(true)}
-                  className="btn-cyan w-full py-4 text-sm">
-                  Join Waitlist →
-                </button>
-              </>
-            )}
-
-            <div className="text-[8px] font-mono text-text-muted text-center mt-4">No spam. Access granted in order of queue position.</div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-[8px] font-mono text-text-muted animate-fade-up" style={{ animationDelay: '400ms' }}>
-          GEOSTOCKLIVE COMMAND SYSTEMS · CLASSIFIED ACCESS ONLY · GSL-ALPHA CLEARANCE REQUIRED
-        </div>
-      </div>
-    </div>
+    <main className="min-h-screen bg-background-primary text-text-primary selection:bg-gold-primary/20 selection:text-gold-bright">
+      <Navbar />
+      <HeroSection />
+      <IntelligenceMetrics />
+      <PipelineSection />
+      <LiveSignalHUD />
+      <GlobalRiskMap />
+      <ArchitectureSection />
+      <PricingSection />
+      <AboutSection />
+      <FinalCTA />
+      <Footer />
+    </main>
   );
 }
